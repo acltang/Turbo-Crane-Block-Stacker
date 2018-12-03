@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI; // for GUI elements: Button, Toggle
 
 public class ArmRotation : MonoBehaviour {
-    public Camera MainCamera = null;
+
     private float mMouseX = 0f;
     private float mMouseY = 0f;
     // Use this for initialization

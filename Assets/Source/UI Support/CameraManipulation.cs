@@ -67,7 +67,7 @@ public class CameraManipulation : MonoBehaviour
         Matrix4x4 m = invP.inverse * r * invP;
 
         Vector3 newCameraPos = m.MultiplyPoint(transform.localPosition);
-        if (Mathf.Abs(Vector3.Dot(newCameraPos.normalized, Vector3.up)) < 0.985)
+        if (Mathf.Abs(Vector3.Dot(newCameraPos.normalized, Vector3.up)) < 0.985 && Vector3.Dot(newCameraPos.normalized, Vector3.up) > 0.015)
         {
             transform.localPosition = newCameraPos;
 

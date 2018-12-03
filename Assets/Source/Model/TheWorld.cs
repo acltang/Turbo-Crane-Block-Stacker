@@ -4,14 +4,18 @@ using UnityEngine;
 
 public partial class TheWorld : MonoBehaviour {
 
-    public SceneNode RootNode;
+    public SceneNode RootNode, Hook;
     public Camera NodeCam;
     public LineSegment LineOfSight;
     private float kSightLength = 7f;
     private float kNodeCamPos = 8.5f;
     public GameObject UnpassableTerrain;
     public GameObject UnpassableTerrain2;
+    public GameObject Block;
+    public GameObject Wall1, Wall2, Wall3, Wall4;
     private float SizeOfBase = 2.5f;
+    public Vector3 HookPosition;
+    public bool HasBlock = false;
 
     	// Use this for initialization
 	void Start () {
@@ -38,6 +42,9 @@ public partial class TheWorld : MonoBehaviour {
         NodeCam.transform.localPosition = pos + kNodeCamPos * dir;
         NodeCam.transform.LookAt(p2, Vector3.up);
 
+        // Update hook position
+        HookPosition = new Vector3(p2.x, p2.y - 0.2f, p2.z);
+
         //CRANE MOVEMENT
         if (Input.GetKey(KeyCode.W) && ClearofTerrain(RootNode.transform.position + -RootNode.transform.forward * Time.deltaTime * 10))
         {
@@ -59,36 +66,52 @@ public partial class TheWorld : MonoBehaviour {
         {
             RootNode.transform.Rotate(Vector3.up * 100 * Time.deltaTime);
         }
+
+        Vector2 d = Input.mouseScrollDelta;
+        Vector3 p = Hook.transform.position;
+        p.y = p.y + (d.y / 8);
+        float UpperBound = 6f;
+        float LowerBound = -3.2f;
+        if (HasBlock) {
+            LowerBound += 2f;
+        }
+        if (p.y <= UpperBound && p.y >= LowerBound)
+        {
+            kSightLength = kSightLength - (d.y / 8);
+            Hook.transform.position = p;
+        }
+
     }
 
     public SceneNode GetRootNode() { return RootNode; }
 
      public bool ClearofTerrain(Vector3 position)
     {
-        if(position.z - SizeOfBase <= UnpassableTerrain.transform.position.z +
-            (UnpassableTerrain.transform.localScale.z/2) && position.x - SizeOfBase <=
-            UnpassableTerrain.transform.position.x + (UnpassableTerrain.transform.localScale.x / 2))
+        if(    ClearofSpecificTerrain(position, UnpassableTerrain)
+            && ClearofSpecificTerrain(position, UnpassableTerrain2)
+            && ClearofSpecificTerrain(position, Wall1)
+            && ClearofSpecificTerrain(position, Wall2)
+            && ClearofSpecificTerrain(position, Wall3)
+            && ClearofSpecificTerrain(position, Wall4))
         {
-            if (position.z + SizeOfBase >= UnpassableTerrain.transform.position.z -
-            (UnpassableTerrain.transform.localScale.z / 2) && position.x + SizeOfBase >=
-            UnpassableTerrain.transform.position.x - (UnpassableTerrain.transform.localScale.x / 2))
-            {
-                return false;
-            }
+            return true;
         }
+        return false;
+    }
 
-        if (position.z - SizeOfBase <= UnpassableTerrain2.transform.position.z +
-            (UnpassableTerrain2.transform.localScale.z / 2) && position.x - SizeOfBase <=
-            UnpassableTerrain2.transform.position.x + (UnpassableTerrain2.transform.localScale.x / 2))
+    public bool ClearofSpecificTerrain(Vector3 position, GameObject terrain)
+    {
+        if (position.z - SizeOfBase <= terrain.transform.position.z +
+            (terrain.transform.localScale.z / 2) && position.x - SizeOfBase <=
+            terrain.transform.position.x + (terrain.transform.localScale.x / 2))
         {
-            if (position.z + SizeOfBase >= UnpassableTerrain2.transform.position.z -
-            (UnpassableTerrain2.transform.localScale.z / 2) && position.x + SizeOfBase >=
-            UnpassableTerrain2.transform.position.x - (UnpassableTerrain2.transform.localScale.x / 2))
+            if (position.z + SizeOfBase >= terrain.transform.position.z -
+            (terrain.transform.localScale.z / 2) && position.x + SizeOfBase >=
+            terrain.transform.position.x - (terrain.transform.localScale.x / 2))
             {
                 return false;
             }
         }
         return true;
     }
-    
 }
