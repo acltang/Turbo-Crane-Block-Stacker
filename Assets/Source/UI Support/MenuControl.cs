@@ -14,6 +14,6 @@ public class MenuControl : MonoBehaviour {
 	
     void TaskOnClick()
     {
-        SceneManager.LoadScene("Demo");
+        SceneManager.LoadScene("Level1");
     }
 }

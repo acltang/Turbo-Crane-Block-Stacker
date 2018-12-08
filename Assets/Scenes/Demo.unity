@@ -1910,6 +1910,12 @@ CanvasRenderer:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1524491775}
   m_CullTransparentMesh: 0
+--- !u!114 &1550360850 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 114988942903932238, guid: 56129a83386c283408a623070b908662,
+    type: 2}
+  m_PrefabInternal: {fileID: 2049977660}
+  m_Script: {fileID: 11500000, guid: 4c903c5d6f94af945944ad8401e24a29, type: 3}
 --- !u!1 &1579549718
 GameObject:
   m_ObjectHideFlags: 0
@@ -2246,7 +2252,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   RootNode: {fileID: 1669706473}
   Hook: {fileID: 1664845223}
-  Arm: {fileID: 0}
+  Arm: {fileID: 1550360850}
   NodeCam: {fileID: 608326655}
   LineOfSight: {fileID: 1658566013}
   UnpassableTerrain: {fileID: 1170668142}
