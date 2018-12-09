@@ -7,6 +7,7 @@ public class Block : MonoBehaviour {
 	private TheWorld TheWorld;
 	public bool picked = false;
 	public bool stacked = false;
+	public bool prestacked = false;
 	public bool droppable = true;
 	private bool falling = false;
 
@@ -66,7 +67,7 @@ public class Block : MonoBehaviour {
 	}
 
 	private void Pickup() {
-		if (!stacked && !TheWorld.HasBlock) {
+		if (!stacked && !prestacked && !TheWorld.HasBlock) {
 			mD = Vector3.Dot(TopAnchor, transform.up);
 			Vector3 p = TheWorld.HookPosition - transform.up * (Vector3.Dot(TheWorld.HookPosition, transform.up) - mD);
 			Vector3 d = p - TopAnchor;
@@ -118,6 +119,12 @@ public class Block : MonoBehaviour {
 		GetComponent<Renderer>().material.color = Color.black;
 	}
 
+	private void SetPreStacked() {
+		prestacked = true;
+		GetComponent<Renderer>().material.color = Color.gray;
+	}
+
+
 	// Handle block floor falling____________________________________
 	public void Drop(float seconds) {
 		foreach (Block block in BlockStack) {
@@ -152,6 +159,7 @@ public class Block : MonoBehaviour {
 				stackedBlock.transform.localPosition.z == transform.localPosition.z) {
 					stackedBlock.BottomBlock = GetComponent<Block>();
 					stackedBlock.BlockIndex = (int)((stackedBlock.transform.localPosition.y + 1) / 2);
+					stackedBlock.SetPreStacked();
 					BlockStack.Add(stackedBlock);
 				}
 			}

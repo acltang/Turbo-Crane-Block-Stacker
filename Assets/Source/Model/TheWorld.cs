@@ -105,11 +105,35 @@ public partial class TheWorld : MonoBehaviour {
         {}
         else if (Input.GetKey(KeyCode.A))
         {
-            RootNode.transform.Rotate(-Vector3.up * 100 * Time.deltaTime);
+            float angle = 100 * Time.deltaTime;
+            Vector3 Hookafterrotation = HookPosition;
+            Hookafterrotation = Hookafterrotation - RootNode.transform.position;
+
+            Hookafterrotation.x = (Hookafterrotation.x * (float)Math.Cos(angle * Mathf.Deg2Rad)) - (Hookafterrotation.z * (float)Math.Sin(angle * Mathf.Deg2Rad));
+            Hookafterrotation.z = (Hookafterrotation.x * (float)Math.Sin(angle * Mathf.Deg2Rad)) + (Hookafterrotation.z * (float)Math.Cos(angle * Mathf.Deg2Rad));
+
+            Hookafterrotation = Hookafterrotation + RootNode.transform.position;
+
+            if (ClearofCubes(Hookafterrotation))
+            {
+                RootNode.transform.Rotate(-Vector3.up * 100 * Time.deltaTime);
+            }
         }
         else if (Input.GetKey(KeyCode.D))
         {
-            RootNode.transform.Rotate(Vector3.up * 100 * Time.deltaTime);
+            float angle = -100 * Time.deltaTime;
+            Vector3 Hookafterrotation = HookPosition;
+            Hookafterrotation = Hookafterrotation - RootNode.transform.position;
+
+            Hookafterrotation.x = (Hookafterrotation.x * (float)Math.Cos(angle * Mathf.Deg2Rad)) - (Hookafterrotation.z * (float)Math.Sin(angle * Mathf.Deg2Rad));
+            Hookafterrotation.z = (Hookafterrotation.x * (float)Math.Sin(angle * Mathf.Deg2Rad)) + (Hookafterrotation.z * (float)Math.Cos(angle * Mathf.Deg2Rad));
+
+            Hookafterrotation = Hookafterrotation + RootNode.transform.position;
+
+            if (ClearofCubes(Hookafterrotation))
+            {
+                RootNode.transform.Rotate(Vector3.up * 100 * Time.deltaTime);
+            }
         }
     }
 
@@ -144,27 +168,25 @@ public partial class TheWorld : MonoBehaviour {
         if (Input.GetMouseButtonDown(0))
         {
             mMouseX = Input.mousePosition.x;
-            //mMouseY = Input.mousePosition.y;
         }
         else if (Input.GetMouseButton(0))
         {
             float dx = mMouseX - Input.mousePosition.x;
-            //float dy = mMouseY - Input.mousePosition.y;
             mMouseX = Input.mousePosition.x;
-            //mMouseY = Input.mousePosition.y;
-            Arm.transform.Rotate(-Vector3.up * dx * Time.deltaTime * 30, Space.World);
-            /* bool moveit= true;
-             Arm.transform.Rotate(-Vector3.up * dx * Time.deltaTime * 35, Space.World);
-             if (!ClearofCube(HookPosition, Block))
-             {
-                 moveit = false;
-             }
-             Arm.transform.Rotate(Vector3.up * dx * Time.deltaTime * 35, Space.World);
-             if (moveit)
-             {
-                 Arm.transform.Rotate(Vector3.up * dx * Time.deltaTime * 30, Space.World);
-             }*/
+            
+            float angle = dx * Time.deltaTime * 30;
+            Vector3 Hookafterrotation = HookPosition;
+            Hookafterrotation = Hookafterrotation - RootNode.transform.position;
 
+            Hookafterrotation.x = (Hookafterrotation.x * (float)Math.Cos(angle * Mathf.Deg2Rad)) - (Hookafterrotation.z * (float)Math.Sin(angle * Mathf.Deg2Rad));
+            Hookafterrotation.z = (Hookafterrotation.x * (float)Math.Sin(angle * Mathf.Deg2Rad)) + (Hookafterrotation.z * (float)Math.Cos(angle * Mathf.Deg2Rad));
+
+            Hookafterrotation = Hookafterrotation + RootNode.transform.position;
+
+            if (ClearofCubes(Hookafterrotation))
+            {
+               Arm.transform.Rotate(-Vector3.up * dx * Time.deltaTime * 30, Space.World);
+            }
         }
     }
 
@@ -323,7 +345,7 @@ public partial class TheWorld : MonoBehaviour {
                     Material darkRed = Resources.Load("Materials/DarkRed") as Material;
                     settings.startColor = new ParticleSystem.MinMaxGradient(darkRed.color);
                     settings.startLifetime = 2;
-                    settings.startDelay = 3.25f;
+                    settings.startDelay = 3.27f;
                     Vector3 blockPosition = floorBlock.transform.localPosition; 
                     explosion.transform.localPosition = new Vector3(blockPosition.x, blockPosition.y - 14f, blockPosition.z);
                     explosion.Play();
