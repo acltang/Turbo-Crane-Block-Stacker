@@ -74,6 +74,7 @@ public class Block : MonoBehaviour {
 			if (d.magnitude < AnchorRadius && (TheWorld.HookPosition.y - TopAnchor.y) <= 0f && (TheWorld.HookPosition.y - TopAnchor.y) > -0.25f) {
 				picked = true;
 				TheWorld.HasBlock = true;
+                TheWorld.holdingBlock = gameObject;
 				GetComponent<Renderer>().material.color = new Color(0f, 0f, 0f, 0.7f);
 			}
 		}

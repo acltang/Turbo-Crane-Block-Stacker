@@ -4,7 +4,7 @@ using UnityEngine;
 using System;
 using UnityEngine.UI;
 
-public partial class TheWorld_Turbo : MonoBehaviour {
+public class TurboWorld : MonoBehaviour {
 
     public SceneNode RootNode, Hook, Arm;
     public Camera MainCamera;

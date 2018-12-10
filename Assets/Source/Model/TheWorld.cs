@@ -6,28 +6,22 @@ using UnityEngine.UI;
 
 public partial class TheWorld : MonoBehaviour {
 
-    public SceneNode RootNode, Hook, Arm;
     public Camera MainCamera;
     public Camera NodeCam;
     public LineSegment LineOfSight;
     private float kSightLength = 7f;
     private float kNodeCamPos = 8.5f;
 
-    public List<GameObject> ImpassableTerrains;
-    public List<GameObject> Blocks;
+    public GameObject holdingBlock;
+    private IEnumerator coroutine; // for falling blocks
 
-    public IEnumerator coroutine;
-
-    private float SizeOfBase = 2.5f;
-    public Vector3 HookPosition;
-    public bool HasBlock = false;
-    private float mMouseX = 0f;
-    //private float mMouseY = 0f;
-    private bool movement = true;
+    public Plane Barrier;
 
     public int Score;
     public Text ScoreText;
     public Timer Timer;
+
+    public bool generateFlyingBlocks = true;
 
     // Use this for initialization
     void Start () {
@@ -85,215 +79,22 @@ public partial class TheWorld : MonoBehaviour {
             DropCrane();
         }
 
+        // Spawn FlyingBlocks
+        if (generateFlyingBlocks) {
+            SpawnFlyingBlocks();
+        }
+
         SetScoreText();
     }
 
     public SceneNode GetRootNode() { return RootNode; }
-
-    private void MoveCrane() {
-        if (Input.GetKey(KeyCode.W) && ClearofTerrain(RootNode.transform.position + -RootNode.transform.forward * Time.deltaTime * 10)
-            && ClearofCubes(HookPosition + -RootNode.transform.forward * Time.deltaTime * 10))
-        {
-            RootNode.transform.position += -RootNode.transform.forward * Time.deltaTime * 10;
-        }
-        if (Input.GetKey(KeyCode.S)&& ClearofTerrain(RootNode.transform.position + RootNode.transform.forward * Time.deltaTime * 10)
-            && ClearofCubes(HookPosition + RootNode.transform.forward * Time.deltaTime * 10))
-        {
-            RootNode.transform.position += RootNode.transform.forward * Time.deltaTime * 10;
-        }
-        if (Input.GetKey(KeyCode.A) && Input.GetKey(KeyCode.D))
-        {}
-        else if (Input.GetKey(KeyCode.A))
-        {
-            float angle = 100 * Time.deltaTime;
-            Vector3 Hookafterrotation = HookPosition;
-            Hookafterrotation = Hookafterrotation - RootNode.transform.position;
-
-            Hookafterrotation.x = (Hookafterrotation.x * (float)Math.Cos(angle * Mathf.Deg2Rad)) - (Hookafterrotation.z * (float)Math.Sin(angle * Mathf.Deg2Rad));
-            Hookafterrotation.z = (Hookafterrotation.x * (float)Math.Sin(angle * Mathf.Deg2Rad)) + (Hookafterrotation.z * (float)Math.Cos(angle * Mathf.Deg2Rad));
-
-            Hookafterrotation = Hookafterrotation + RootNode.transform.position;
-
-            if (ClearofCubes(Hookafterrotation))
-            {
-                RootNode.transform.Rotate(-Vector3.up * 100 * Time.deltaTime);
-            }
-        }
-        else if (Input.GetKey(KeyCode.D))
-        {
-            float angle = -100 * Time.deltaTime;
-            Vector3 Hookafterrotation = HookPosition;
-            Hookafterrotation = Hookafterrotation - RootNode.transform.position;
-
-            Hookafterrotation.x = (Hookafterrotation.x * (float)Math.Cos(angle * Mathf.Deg2Rad)) - (Hookafterrotation.z * (float)Math.Sin(angle * Mathf.Deg2Rad));
-            Hookafterrotation.z = (Hookafterrotation.x * (float)Math.Sin(angle * Mathf.Deg2Rad)) + (Hookafterrotation.z * (float)Math.Cos(angle * Mathf.Deg2Rad));
-
-            Hookafterrotation = Hookafterrotation + RootNode.transform.position;
-
-            if (ClearofCubes(Hookafterrotation))
-            {
-                RootNode.transform.Rotate(Vector3.up * 100 * Time.deltaTime);
-            }
-        }
-    }
-
-    private bool CheckDropCrane() {
-        foreach (GameObject block in Blocks) {
-            if (block) {
-                float dist = Vector3.Distance(block.transform.localPosition, RootNode.transform.localPosition);
-                float floorDist = (float)Math.Sqrt((dist * dist) - 4f); // 4 is 2 squared (2 is distance from base.y to block.y)
-                if (floorDist < 3f) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    private void DropCrane() {
-        if (RootNode.transform.localPosition.y < -15f) {
-            movement = true;
-        }
-        else {
-            RootNode.transform.localPosition += -transform.up * Time.deltaTime * 10;
-            MainCamera.transform.localPosition += -transform.up * Time.deltaTime * 15;
-            Transform lookAt = MainCamera.GetComponent<CameraManipulation>().LookAt;
-            lookAt.localPosition += -transform.up * Time.deltaTime * 15;
-            NodeCam.gameObject.SetActive(false);
-            HasBlock = true;
-        }
-    }
-
-    private void RotateArm() {
-        if (Input.GetMouseButtonDown(0))
-        {
-            mMouseX = Input.mousePosition.x;
-        }
-        else if (Input.GetMouseButton(0))
-        {
-            float dx = mMouseX - Input.mousePosition.x;
-            mMouseX = Input.mousePosition.x;
-            
-            float angle = dx * Time.deltaTime * 30;
-            Vector3 Hookafterrotation = HookPosition;
-            Hookafterrotation = Hookafterrotation - RootNode.transform.position;
-
-            Hookafterrotation.x = (Hookafterrotation.x * (float)Math.Cos(angle * Mathf.Deg2Rad)) - (Hookafterrotation.z * (float)Math.Sin(angle * Mathf.Deg2Rad));
-            Hookafterrotation.z = (Hookafterrotation.x * (float)Math.Sin(angle * Mathf.Deg2Rad)) + (Hookafterrotation.z * (float)Math.Cos(angle * Mathf.Deg2Rad));
-
-            Hookafterrotation = Hookafterrotation + RootNode.transform.position;
-
-            if (ClearofCubes(Hookafterrotation))
-            {
-               Arm.transform.Rotate(-Vector3.up * dx * Time.deltaTime * 30, Space.World);
-            }
-        }
-    }
-
-    private void MoveHook() {
-        Vector2 d = Input.mouseScrollDelta;
-        Vector3 p = Hook.transform.position;
-        Vector3 test = HookPosition;
-        test.y = test.y + (d.y / 8);
-        p.y = p.y + (d.y / 8);
-        float UpperBound = 6f;
-        //float LowerBound = -3.2f;
-        float LowerBound = -5.2f;
-        if (HasBlock) {
-            LowerBound += 2f;
-        }
-        if (p.y <= UpperBound && p.y >= LowerBound && ClearofCubes(test))
-        {
-            kSightLength = kSightLength - (d.y / 8);
-            Hook.transform.position = p;
-        }
-    }
-
-    private void UpdateTerrains() {
-        GameObject WorldTerrains = GameObject.Find("ImpassableTerrains");
-        foreach (Transform terrain in WorldTerrains.transform) {
-            ImpassableTerrains.Add(terrain.gameObject);
-        }
-    }
-
-    private void UpdateBlocks() {
-        GameObject WorldBlocks = GameObject.Find("Blocks");
-        foreach (Transform block in WorldBlocks.transform) {
-            Blocks.Add(block.gameObject);
-        }
-    }
-
-     public bool ClearofTerrain(Vector3 position)
-    {
-        foreach (GameObject terrain in ImpassableTerrains) {
-            if (terrain && !ClearofSpecificTerrain(position, terrain)) {
-                return false;
-            }
-        }
-        foreach (GameObject block in Blocks) {
-            if (block && !ClearofSpecificTerrain(position, block)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-     public bool ClearofCubes(Vector3 position)
-    {
-        foreach (GameObject block in Blocks) {
-            if (block && !ClearofCube(position, block)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public bool ClearofSpecificTerrain(Vector3 position, GameObject terrain)
-    {
-        if (position.z - SizeOfBase <= terrain.transform.position.z +
-            (terrain.transform.localScale.z / 2) && position.x - SizeOfBase <=
-            terrain.transform.position.x + (terrain.transform.localScale.x / 2))
-        {
-            if (position.z + SizeOfBase >= terrain.transform.position.z -
-            (terrain.transform.localScale.z / 2) && position.x + SizeOfBase >=
-            terrain.transform.position.x - (terrain.transform.localScale.x / 2))
-            {
-                if (position.y <= terrain.transform.position.y + ((terrain.transform.localScale.y / 2)-.25) &&
-                position.y >= terrain.transform.position.y - ((terrain.transform.localScale.y / 2)+.25))
-                {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
-    public bool ClearofCube(Vector3 position, GameObject cube)
-    {
-        if (position.z  <= cube.transform.position.z +
-            (cube.transform.localScale.z / 2) && position.x <=
-            cube.transform.position.x + (cube.transform.localScale.x / 2))
-        {
-            if (position.z  >= cube.transform.position.z -
-            (cube.transform.localScale.z / 2) && position.x >=
-            cube.transform.position.x - (cube.transform.localScale.x / 2))
-            {
-                if (position.y <= cube.transform.position.y + ((cube.transform.localScale.y / 2)-.25) &&
-                position.y >= cube.transform.position.y - ((cube.transform.localScale.y / 2)+.25))
-                {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
 
     private void GenerateFloorBlocks() {
         Vector3 position = new Vector3(0f, -1f, 0f); // initial block position
 
         // instantiate blocks in a spiral pattern
         // spiral solution from https://stackoverflow.com/questions/398299/looping-in-a-spiral
-        int X = 30; // blocks per row
+        int X = 29; // blocks per row
         int Y = 20; // blocks per column
         int x,y,dx,dy;
         x = y = dx =0;
@@ -327,6 +128,7 @@ public partial class TheWorld : MonoBehaviour {
                 Block floorBlock = block.gameObject.GetComponent<Block>();
                 if (floorBlock.name.Equals("Block(Clone)") && !floorBlock.picked && !floorBlock.stacked) {
                     floorBlock.Drop(0.4f);
+                    Barrier.BlockPositions.Add(floorBlock.transform.localPosition);
                     yield return new WaitForSeconds(0.2f);
                 }
             }
@@ -351,6 +153,18 @@ public partial class TheWorld : MonoBehaviour {
                     explosion.Play();
                 }
             }
+        }
+    }
+
+    private void SpawnFlyingBlocks() {
+        mSinceLastGenerated += Time.deltaTime;
+        if (mSinceLastGenerated >= mGenerateInterval)
+        {
+            GameObject g = Instantiate(Resources.Load("FlyingBlock")) as GameObject;
+            FlyingBlock b = g.GetComponent<FlyingBlock>();
+            b.Initialize();
+
+            mSinceLastGenerated = 0f;
         }
     }
 

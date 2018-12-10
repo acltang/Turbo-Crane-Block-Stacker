@@ -12,6 +12,6 @@ EditorBuildSettings:
     path: Assets/Scenes/Demo.unity
     guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 1
-    path: Assets/Scenes/Level1.unity
+    path: Assets/Scenes/Stacker.unity
     guid: 3a2ef464ab04668409134ada7eb86063
   m_configObjects: {}
